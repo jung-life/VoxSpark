@@ -1,10 +1,10 @@
 const CACHE = 'voxspark-v1';
 const PRECACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/src/app.js',
-  '/src/llm.js',
+  './',
+  './index.html',
+  './manifest.json',
+  './src/app.js',
+  './src/llm.js',
 ];
 
 self.addEventListener('install', (e) => {

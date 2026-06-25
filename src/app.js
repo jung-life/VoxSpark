@@ -2,7 +2,7 @@ import { chatStream } from './llm.js';
 
 // ── Service Worker ───────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(console.error);
+  navigator.serviceWorker.register('./sw.js').catch(console.error);
 }
 
 // ── API Key (localStorage) ────────────────────────────────────────────────────
@@ -91,9 +91,21 @@ const form = document.getElementById('prompt-form');
 const input = document.getElementById('prompt-input');
 const sendBtn = document.getElementById('send-btn');
 const output = document.getElementById('output');
+const hero = document.getElementById('hero');
 
-const SYSTEM = `You are VoxSpark, a concise and helpful AI assistant.
-Answer clearly and directly. Use markdown sparingly — plain prose is preferred.`;
+// Clicking an example fills the input
+document.querySelectorAll('#hero-examples li').forEach((li) => {
+  li.addEventListener('click', () => {
+    input.value = li.textContent;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  });
+});
+
+const SYSTEM = `You are VoxSpark, a developer assistant powered by Claude.
+You help developers ship faster — writing code, reviewing diffs, debugging, scaffolding features, and explaining technical concepts.
+Be direct and precise. Prefer code over prose when a code example is clearer.
+Use markdown for code blocks. Keep explanations concise.`;
 
 /** @type {Array<{role: string, content: string}>} */
 const history = [];
@@ -130,6 +142,7 @@ form.addEventListener('submit', async (e) => {
   input.style.height = 'auto';
   sendBtn.disabled = true;
 
+  hero.classList.add('hidden');
   appendMessage('user', text);
   history.push({ role: 'user', content: text });
 
