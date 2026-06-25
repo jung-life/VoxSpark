@@ -2,7 +2,7 @@ import { chatStream } from './llm.js';
 
 // ── Service Worker ───────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(console.error);
+  navigator.serviceWorker.register('./sw.js').catch(console.error);
 }
 
 // ── API Key (localStorage) ────────────────────────────────────────────────────
