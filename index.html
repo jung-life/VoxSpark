@@ -168,6 +168,88 @@
       color: var(--muted);
       text-align: center;
     }
+
+    /* Settings */
+    #settings-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      margin-left: auto;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+    }
+    #settings-btn:hover { color: var(--text); }
+
+    #settings-dialog {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #00000088;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #settings-dialog.open { display: flex; }
+
+    .dialog-box {
+      background: var(--surface);
+      border: 1px solid #ffffff18;
+      border-radius: 14px;
+      padding: 1.5rem;
+      width: min(420px, 92vw);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dialog-box h2 { font-size: 1.1rem; }
+
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field label { font-size: 0.8rem; color: var(--muted); }
+
+    .field input {
+      background: var(--bg);
+      border: 1px solid #ffffff18;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 0.6rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--accent); }
+
+    .dialog-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
+
+    .btn-primary {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.5rem 1.1rem;
+    }
+    .btn-primary:hover { background: var(--accent-dark); }
+
+    .btn-ghost {
+      background: none;
+      border: 1px solid #ffffff20;
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    .key-status {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .key-status.set { color: #7cfc8a; }
   </style>
 </head>
 <body>
@@ -177,7 +259,28 @@
       <path d="M9 9h6M9 12h6M9 15h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <h1>VoxSpark</h1>
+    <button id="settings-btn" aria-label="Settings" title="Settings">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
   </header>
+
+  <div id="settings-dialog" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="dialog-box">
+      <h2>Settings</h2>
+      <div class="field">
+        <label for="api-key-input">Anthropic API Key</label>
+        <input id="api-key-input" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false" />
+        <span class="key-status" id="key-status">Not set</span>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn-ghost" id="settings-cancel">Cancel</button>
+        <button class="btn-primary" id="settings-save">Save</button>
+      </div>
+    </div>
+  </div>
 
   <main>
     <div id="install-banner">
