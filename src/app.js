@@ -5,6 +5,65 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(console.error);
 }
 
+// ── API Key (localStorage) ────────────────────────────────────────────────────
+const KEY_STORE = 'voxspark_api_key';
+
+function loadKey() {
+  const k = localStorage.getItem(KEY_STORE);
+  if (k) window.__VOXSPARK_API_KEY = k;
+  return k;
+}
+
+function saveKey(k) {
+  if (k) {
+    localStorage.setItem(KEY_STORE, k);
+    window.__VOXSPARK_API_KEY = k;
+  } else {
+    localStorage.removeItem(KEY_STORE);
+    delete window.__VOXSPARK_API_KEY;
+  }
+}
+
+loadKey();
+
+// ── Settings Dialog ───────────────────────────────────────────────────────────
+const settingsBtn = document.getElementById('settings-btn');
+const settingsDialog = document.getElementById('settings-dialog');
+const apiKeyInput = document.getElementById('api-key-input');
+const keyStatus = document.getElementById('key-status');
+const settingsSave = document.getElementById('settings-save');
+const settingsCancel = document.getElementById('settings-cancel');
+
+function refreshKeyStatus() {
+  const k = localStorage.getItem(KEY_STORE);
+  if (k) {
+    keyStatus.textContent = `Key set (${k.slice(0, 12)}…)`;
+    keyStatus.className = 'key-status set';
+  } else {
+    keyStatus.textContent = 'Not set';
+    keyStatus.className = 'key-status';
+  }
+}
+
+settingsBtn.addEventListener('click', () => {
+  apiKeyInput.value = localStorage.getItem(KEY_STORE) || '';
+  refreshKeyStatus();
+  settingsDialog.classList.add('open');
+  apiKeyInput.focus();
+});
+
+settingsCancel.addEventListener('click', () => settingsDialog.classList.remove('open'));
+
+settingsDialog.addEventListener('click', (e) => {
+  if (e.target === settingsDialog) settingsDialog.classList.remove('open');
+});
+
+settingsSave.addEventListener('click', () => {
+  saveKey(apiKeyInput.value.trim());
+  refreshKeyStatus();
+  settingsDialog.classList.remove('open');
+});
+
 // ── PWA Install Banner ────────────────────────────────────────────────────────
 let deferredInstall = null;
 const banner = document.getElementById('install-banner');
