@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6c63ff" />
+  <meta name="description" content="VoxSpark — AI-powered voice task assistant" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <title>VoxSpark</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #6c63ff;
+      --accent-dark: #4b44cc;
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --text: #e8e8f0;
+      --muted: #888899;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 1px solid #ffffff10;
+    }
+
+    header svg { width: 28px; height: 28px; }
+
+    header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 720px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    #prompt-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    #prompt-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid #ffffff18;
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 52px;
+      max-height: 160px;
+    }
+
+    #prompt-input:focus { border-color: var(--accent); }
+
+    #send-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0 1.1rem;
+      transition: background 0.2s;
+      align-self: flex-end;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #send-btn:hover { background: var(--accent-dark); }
+    #send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    #output {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .message {
+      padding: 0.9rem 1.1rem;
+      border-radius: 10px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.user {
+      background: var(--accent);
+      align-self: flex-end;
+      max-width: 85%;
+    }
+
+    .message.assistant {
+      background: var(--surface);
+      border: 1px solid #ffffff10;
+      align-self: flex-start;
+      max-width: 92%;
+    }
+
+    .message.error {
+      background: #3a1a1a;
+      border: 1px solid #ff6b6b44;
+      color: #ff9999;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid #ffffff30;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #install-banner {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-size: 0.875rem;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    #install-banner.show { display: flex; }
+    #install-banner button {
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    footer {
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#6c63ff"/>
+      <path d="M9 9h6M9 12h6M9 15h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <h1>VoxSpark</h1>
+  </header>
+
+  <main>
+    <div id="install-banner">
+      <span>Install VoxSpark for offline access</span>
+      <button id="install-btn">Install</button>
+      <button id="dismiss-btn" style="background:transparent;color:var(--muted);border:none;cursor:pointer;font-size:1.1rem;">✕</button>
+    </div>
+
+    <div id="output"></div>
+
+    <form id="prompt-form">
+      <textarea
+        id="prompt-input"
+        placeholder="Ask VoxSpark anything…"
+        rows="1"
+        autocomplete="off"
+        spellcheck="true"
+      ></textarea>
+      <button id="send-btn" type="submit" aria-label="Send">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </form>
+  </main>
+
+  <footer>VoxSpark &copy; 2026 — powered by Claude</footer>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
